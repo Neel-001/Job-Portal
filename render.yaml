@@ -2,7 +2,7 @@ services:
   - type: web
     name: job-portal-frontend
     env: static
-    buildCommand: cd frontend && npm ci && npm run build
+    buildCommand: cd frontend && npm ci && npm run build:linux
     staticPublishPath: frontend/dist
     routes:
       - type: rewrite
