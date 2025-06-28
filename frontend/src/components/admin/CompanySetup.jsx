@@ -37,13 +37,16 @@ function CompanySetup() {
         e.preventDefault();
         setLoading(true);
         const formData = new FormData();
-        formData.append('name', input.name);
-        formData.append('description', input.description);
-        formData.append('website', input.website);
-        formData.append('location', input.location);
+        
+        // Only append fields that have values
+        if (input.name.trim()) formData.append('name', input.name);
+        if (input.description.trim()) formData.append('description', input.description);
+        if (input.website.trim()) formData.append('website', input.website);
+        if (input.location.trim()) formData.append('location', input.location);
         if (input.file) {
             formData.append('file', input.file);
         }
+        
         try {
             const res = await axios.put(`${COMPANY_API_END_POINT}/update/${params.id}`, formData, {
                 headers: {
@@ -51,8 +54,8 @@ function CompanySetup() {
                 }, withCredentials: true
             });
             if (res.data.success) {
-                toast.success(res.data.message)
-                navigate("/admin/companies")
+                toast.success(res.data.message);
+                navigate("/admin/companies");
             }
         } catch (error) {
             console.log(error);
