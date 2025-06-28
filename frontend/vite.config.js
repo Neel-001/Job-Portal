@@ -13,6 +13,11 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+      }
+    }
   },
   server: {
     historyApiFallback: true,
@@ -20,5 +25,5 @@ export default defineConfig({
   preview: {
     historyApiFallback: true,
   },
-  publicDir: 'public'
+  base: '/'
 })
