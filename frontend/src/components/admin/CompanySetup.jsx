@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react'
+// ...existing code...
+import CompanySetupSkeleton from './CompanySetupSkeleton'
 import Navbar from '../shared/Navbar'
 import { Button } from '../ui/button'
 import { ArrowLeft, Loader2 } from 'lucide-react'
@@ -22,7 +24,7 @@ function CompanySetup() {
         file: null,
     })
     const {singleCompany} = useSelector((store) => store.company)
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
     
     const navigate = useNavigate();
     const changeEventHandler = (e) => {
@@ -65,6 +67,7 @@ function CompanySetup() {
         }
     }
     useEffect(() => {
+        setLoading(true)
         setInput({
             name: singleCompany.name || "",
             description: singleCompany.description || "",
@@ -72,14 +75,21 @@ function CompanySetup() {
             location: singleCompany.location || "",
             file: singleCompany.file || null,
         })
-    },[singleCompany])
+        // Set loading false as soon as company data is available
+        if (singleCompany && singleCompany.name) {
+            setLoading(false)
+        }
+    }, [singleCompany])
+    if (loading) {
+        return <CompanySetupSkeleton />
+    }
     return (
         <div>
             <Navbar />
             <div className='max-w-xl mx-auto my-10'>
                 <form action="" onSubmit={submitHandler}>
                     <div className='flex items-center gap-5 p-8'>
-                        <Button className="flex items-center gap-2 text-gray-500 font-semibold" variant="outline" onClick = {() => navigate("/admin/companies")}>
+                        <Button className="flex items-center gap-2 text-gray-500 font-semibold" variant="outline" onClick = {() => navigate("/admin/companies")}> 
                             <ArrowLeft />
                             <span >Back</span>
                         </Button>

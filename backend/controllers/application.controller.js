@@ -74,10 +74,10 @@ export const getApplicants = async (req,res)=>{
         const job = await Job.findById(jobId).populate({
             path:"applications",
             options:{sort: {createdAt: -1}},
-            populate:{
-                path:"applicant",
-                options:{sort: {createdAt: -1}},
-            }
+            populate:[
+                { path: "applicant", options: { sort: { createdAt: -1 } } },
+                { path: "job" }
+            ]
         })
         if(!job){
             return res.status(404).json({
@@ -90,7 +90,7 @@ export const getApplicants = async (req,res)=>{
             success:true,
         });
     } catch (error) {
-        console.log(error);;
+        console.log(error);
     }
 }
 

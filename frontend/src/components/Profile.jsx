@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Navbar from './shared/Navbar'
 
 import { AvatarImage, Avatar } from './ui/avatar'
@@ -7,17 +7,31 @@ import { Contact, Mail, Pen } from 'lucide-react'
 import { Badge } from './ui/badge'
 import { Label } from './ui/label'
 import AppliedJobTable from './AppliedJobTable'
+import UpcomingInterviews from './UpcomingInterviews';
 import UpdateProfileDialog from './UpdateProfileDialog'
 import { useSelector } from 'react-redux'
 import useGetAppliedJobs from '@/hooks/useGetAppliedJobs'
+import ProfileSkeleton from './ProfileSkeleton'
 
 
 // const skills = ["html", "css", "js", "react js"]
-const isResume = true;
+
 function Profile() {
+    const isResume = true;
     useGetAppliedJobs();
-    const [open,setOpen] = useState(false);
-    const {user} = useSelector(store=>store.auth)
+    const [open, setOpen] = useState(false);
+    const { user } = useSelector(store => store.auth)
+    const [loading, setLoading] = useState(true)
+    useEffect(() => {
+        setLoading(true)
+        // Simulate data fetch: set loading false when user data is available
+        if (user) {
+            setLoading(false)
+        }
+    }, [user])
+    if (loading) {
+        return <ProfileSkeleton />
+    }
     return (
         <div className="bg-gradient-to-br from-[#f3f0fa] to-[#ece9f6] min-h-screen pb-10">
             <Navbar />
@@ -35,7 +49,7 @@ function Profile() {
                             <p className='text-gray-500'>{user?.profile?.bio}</p>
                         </div>
                     </div>
-                    <Button className="rounded-full border-[#6A38C2] text-[#6A38C2] font-semibold px-6 py-2 hover:bg-[#f3f0fa] transition" variant="outline" onClick={()=> setOpen(true)}><Pen className="mr-2" />Edit</Button>
+                    <Button className="rounded-full border-[#6A38C2] text-[#6A38C2] font-semibold px-6 py-2 hover:bg-[#f3f0fa] transition" variant="outline" onClick={() => setOpen(true)}><Pen className="mr-2" />Edit</Button>
                 </div>
                 <div className='my-8 grid grid-cols-1 md:grid-cols-2 gap-6'>
                     <div className='flex items-center gap-3 bg-[#f3f0fa] rounded-xl p-4'>
@@ -65,7 +79,10 @@ function Profile() {
                 <h1 className='font-bold text-lg my-5'>Applied Jobs</h1>
                 <AppliedJobTable />
             </div>
-            <UpdateProfileDialog open = {open} setOpen = {setOpen}/> 
+            <div className='max-w-4xl mx-auto'>
+                <UpcomingInterviews userId={user?._id} />
+            </div>
+            <UpdateProfileDialog open={open} setOpen={setOpen} />
         </div>
     )
 }

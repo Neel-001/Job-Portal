@@ -1,13 +1,15 @@
+
 import React, { useEffect, useState } from 'react'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
-
+import JobDescriptionSkeleton from './JobDescriptionSkeleton'
 import axios from 'axios';
 import { APPLICATION_API_END_POINT, JOB_API_END_POINT } from '@/utils/constant';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSingleJob } from '@/redux/jobSlice';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
+
 
 function JobDescription() {
   const params = useParams();
@@ -17,6 +19,8 @@ function JobDescription() {
   const { user } = useSelector(store => store.auth);
   const isInitiallyApplied = singleJob?.applications?.some(application => application.applicant === user?._id) || false
   const [isApplied, setisApplied] = useState(isInitiallyApplied);
+  const [loading, setLoading] = useState(true);
+
   const applyJobHandler = async () => {
     try {
       const res = await axios.get(`${APPLICATION_API_END_POINT}/apply/${jobId}`, { withCredentials: true });
@@ -32,8 +36,9 @@ function JobDescription() {
     }
   }
 
-
   useEffect(() => {
+    setLoading(true);
+    dispatch(setSingleJob({})); // Clear previous job data
     const fetchSingleJob = async () => {
       try {
         const res = await axios.get(`${JOB_API_END_POINT}/get/${jobId}`, { withCredentials: true });
@@ -43,10 +48,17 @@ function JobDescription() {
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     }
     fetchSingleJob();
   }, [jobId, dispatch, user?._id])
+
+  if (loading) {
+    return <JobDescriptionSkeleton />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f3f0fa] via-[#ece9f6] to-[#e0e7ff] pb-10 flex flex-col">
       <div className="max-w-3xl mx-auto my-12 bg-white/95 border border-[#e0e7ff] rounded-3xl shadow-2xl p-10 backdrop-blur-lg">

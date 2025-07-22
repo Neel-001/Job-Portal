@@ -6,17 +6,20 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { setSearchCompanyByText } from '@/redux/companySlice'
 import AdminJobsTable from './AdminJobsTable'
+import AdminInterviews from './AdminInterviews'
+import { useSelector } from 'react-redux';
 import useGetAllAdminJobs from '@/hooks/useGetAllAdminJobs'
 import { setsearchJobByText } from '@/redux/jobSlice'
 
 function AdminJobs() {
-  useGetAllAdminJobs()
-  const navigate = useNavigate()
-  const [input, setInput] = useState("")
-  const dispatch = useDispatch()
+  useGetAllAdminJobs();
+  const navigate = useNavigate();
+  const [input, setInput] = useState("");
+  const dispatch = useDispatch();
+  const { user } = useSelector(store => store.auth);
   useEffect(() => {
-    dispatch(setsearchJobByText(input))
-  }, [input])
+    dispatch(setsearchJobByText(input));
+  }, [input]);
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f3f0fa] via-[#ece9f6] to-[#e0e7ff] pb-10 flex flex-col">
       <Navbar />
@@ -32,9 +35,15 @@ function AdminJobs() {
         <div className="mt-8">
           <AdminJobsTable />
         </div>
+        {/* Show scheduled interviews for this recruiter */}
+        {user && user.role === 'recruiter' && (
+          <div className="mt-12">
+            <AdminInterviews adminId={user._id} />
+          </div>
+        )}
       </div>
     </div>
-  )
+  );
 }
 
 export default AdminJobs

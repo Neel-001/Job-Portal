@@ -3,27 +3,30 @@ import Navbar from './shared/Navbar'
 import FilterCard from './FilterCard'
 import Job from './Job'
 import { useSelector } from 'react-redux'
-import {motion} from 'framer-motion'
+import { motion } from 'framer-motion'
+import JobsSkeleton from './JobsSkeleton'
 
-
-// const jobsArray = [1, 2, 3, 4, 5, 6, 7, 8];
 function Jobs() {
-    const {allJobs,searchedQuery} = useSelector(store => store.job)
-    const [filterJobs,setFilterJobs] = useState(allJobs)
+    const { allJobs, searchedQuery } = useSelector(store => store.job)
+    const [filterJobs, setFilterJobs] = useState(allJobs)
+    const [loading, setLoading] = useState(true)
 
-    useEffect(()=>{
-        if(searchedQuery){
-            const filteredJobs = allJobs.filter((job)=>{
+    useEffect(() => {
+        setLoading(true)
+        if (searchedQuery) {
+            const filteredJobs = allJobs.filter((job) => {
                 return job.title.toLowerCase().includes(searchedQuery.toLowerCase()) ||
                     job.description.toLowerCase().includes(searchedQuery.toLowerCase()) ||
                     job.location.toLowerCase().includes(searchedQuery.toLowerCase())
             })
             setFilterJobs(filteredJobs)
         }
-        else{
+        else {
             setFilterJobs(allJobs)
         }
-    },[allJobs,searchedQuery])
+        setLoading(false)
+    }, [allJobs, searchedQuery])
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-[#f3f0fa] via-[#ece9f6] to-[#e0e7ff] pb-10">
             <Navbar />
@@ -35,7 +38,9 @@ function Jobs() {
                         </div>
                     </div>
                     <div className="flex-1">
-                        {filterJobs.length === 0 ? (
+                        {loading ? (
+                            <JobsSkeleton />
+                        ) : filterJobs.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-20">
                                 <img src="/public/vite.svg" alt="No jobs" className="w-24 h-24 opacity-60 mb-4" />
                                 <span className="text-xl font-semibold text-[#6A38C2]">No jobs found.</span>
