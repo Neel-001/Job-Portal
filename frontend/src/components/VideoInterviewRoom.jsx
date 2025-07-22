@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { Mic, MicOff, Video, VideoOff, PhoneOff, ScreenShare } from 'lucide-react';
 
-const SIGNAL_SERVER_URL = 'http://localhost:5001'; // Change to your production URL
+const SIGNAL_SERVER_URL = 'https://jobportal-signaling-server.onrender.com'; // Change to your production URL
 
 const VideoInterviewRoom = ({ roomId, userId }) => {
   const [connecting, setConnecting] = useState(true);
