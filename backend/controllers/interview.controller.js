@@ -1,12 +1,9 @@
 import { Job } from '../models/job.model.js';
-// Get all interviews for jobs posted by an admin (recruiter)
 export const getAdminInterviews = async (req, res) => {
   try {
     const { adminId } = req.params;
-    // Find all jobs posted by this admin
     const jobs = await Job.find({ created_by: adminId }, '_id');
     const jobIds = jobs.map(j => j._id);
-    // Find all interviews for these jobs
     const interviews = await Interview.find({ jobId: { $in: jobIds } })
       .populate('applicantId')
       .populate('jobId')
@@ -19,21 +16,17 @@ export const getAdminInterviews = async (req, res) => {
 
 import Interview from '../models/interview.model.js';
 
-// Schedule a new interview
 export const createInterview = async (req, res) => {
   try {
     const { applicantId, jobId, date, videoRoomId } = req.body;
-    // Check if an interview already exists for this applicant and job
     let interview = await Interview.findOne({ applicantId, jobId });
     if (interview) {
-      // Update the existing interview
       interview.date = date;
       interview.videoRoomId = videoRoomId;
       interview.status = 'Scheduled';
       await interview.save();
       return res.status(200).json(interview);
     } else {
-      // Create a new interview
       interview = await Interview.create({
         applicantId,
         jobId,
@@ -48,7 +41,6 @@ export const createInterview = async (req, res) => {
   }
 };
 
-// Get all interviews for a user (applicant or admin)
 export const getUserInterviews = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -61,7 +53,6 @@ export const getUserInterviews = async (req, res) => {
   }
 };
 
-// Update interview status/feedback
 export const updateInterview = async (req, res) => {
   try {
     const { id } = req.params;

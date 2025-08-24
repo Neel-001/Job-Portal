@@ -11,7 +11,7 @@ const VideoInterviewRoom = ({ roomId, userId }) => {
   const [remoteCameraOn, setRemoteCameraOn] = useState(true); // Boolean for the other user
   const [micOn, setMicOn] = useState(true);
   const [screenSharing, setScreenSharing] = useState(false);
-  // Debug overlay states
+  
   const [debug, setDebug] = useState({
     socketConnected: false,
     getUserMedia: 'pending',
@@ -26,9 +26,9 @@ const VideoInterviewRoom = ({ roomId, userId }) => {
   const socketRef = useRef();
   const localStreamRef = useRef();
 
-  // Track if remote user was ever present
+  
   const remoteUserPresent = useRef(false);
-  // Handshake state refs (must be at top level, not inside useEffect)
+  
   const remoteReady = useRef(false);
   const localReady = useRef(false);
   const offerSent = useRef(false);
@@ -69,11 +69,11 @@ const VideoInterviewRoom = ({ roomId, userId }) => {
       console.error('Socket connection error (outer):', err);
     }
 
-    // Create RTCPeerConnection immediately
+    
     pcRef.current = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
     setDebug(d => ({ ...d, peerState: pcRef.current.signalingState }));
 
-    // Move event handlers inside here
+    
     pcRef.current.onicecandidate = (event) => {
       setDebug(d => ({ ...d, peerState: pcRef.current.signalingState }));
       if (event.candidate) {
@@ -94,8 +94,7 @@ const VideoInterviewRoom = ({ roomId, userId }) => {
       }
     };
 
-    // Get media after video element is mounted
-    // Use a flag to avoid double-calling
+    
     let gotMedia = false;
     const getMedia = async () => {
       if (gotMedia) return;
@@ -114,12 +113,12 @@ const VideoInterviewRoom = ({ roomId, userId }) => {
         setConnecting(false);
       }
     };
-    // Wait for video element to mount, then set srcObject and add tracks
+    
     const waitForVideo = setInterval(() => {
       if (localVideoRef.current && localStreamRef.current) {
         localVideoRef.current.srcObject = localStreamRef.current;
         if (pcRef.current && pcRef.current.signalingState !== 'closed') {
-          // Only add tracks if not already added
+          
           const senders = pcRef.current.getSenders();
           const tracks = localStreamRef.current.getTracks();
           tracks.forEach(track => {
@@ -134,7 +133,7 @@ const VideoInterviewRoom = ({ roomId, userId }) => {
     getMedia();
 
 
-    // Helper to send offer if possible
+    
     const trySendOffer = async () => {
       if (
         pcRef.current &&
@@ -150,7 +149,7 @@ const VideoInterviewRoom = ({ roomId, userId }) => {
     };
 
 
-    // Ready handshake logic (useRef for persistence)
+    
     const sendOfferIfReady = async () => {
       if (remoteReady.current && localReady.current && !offerSent.current) {
         offerSent.current = true;
@@ -160,7 +159,7 @@ const VideoInterviewRoom = ({ roomId, userId }) => {
 
     socketRef.current.on('user-joined', async () => {
       console.log('user-joined event received!');
-      // Wait for ready handshake
+      
     });
 
     socketRef.current.on('ready', () => {
@@ -168,16 +167,16 @@ const VideoInterviewRoom = ({ roomId, userId }) => {
       sendOfferIfReady();
     });
 
-    // Listen for the other user's camera state
+    
     socketRef.current.on('camera-toggle', ({ cameraOn: newCameraState }) => {
       setRemoteCameraOn(newCameraState);
     });
 
-    // Remove old localReady setTimeout logic
+    
 
     let gotOffer = false;
     socketRef.current.on('signal', async (payload) => {
-      // Accept { id, data } from server
+      
       const data = payload.data;
       setDebug(d => ({ ...d, lastSignal: JSON.stringify(data) }));
       console.log('signal event received!', data);
@@ -221,12 +220,12 @@ const VideoInterviewRoom = ({ roomId, userId }) => {
 
     socketRef.current.on('user-left', () => {
       console.log('user-left event received!');
-      // Only show call ended if remote user was ever present
+      
       if (remoteUserPresent.current) {
         setCallEnded(true);
         if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
       } else {
-        // Ignore user-left if no remote ever joined
+       
         console.log('user-left ignored: remote user was never present.');
       }
     });
@@ -266,7 +265,7 @@ const VideoInterviewRoom = ({ roomId, userId }) => {
 
   const handleEndCall = () => {
     console.log('handleEndCall called!');
-    // Notify the other participant
+    
     if (socketRef.current) {
       socketRef.current.emit('leave', roomId);
       socketRef.current.disconnect();
@@ -276,19 +275,19 @@ const VideoInterviewRoom = ({ roomId, userId }) => {
       localStreamRef.current.getTracks().forEach(track => track.stop());
     }
     setCallEnded(true);
-    window.location.href = '/'; // Automatically navigate to home
+    window.location.href = '/'; 
   };
 
   const toggleCamera = () => {
     if (localStreamRef.current) {
       const videoTrack = localStreamRef.current.getVideoTracks()[0];
       if (videoTrack) {
-        // This just enables or disables the video track, it does not stop the camera hardware
+       
         const newCameraState = !videoTrack.enabled;
         videoTrack.enabled = newCameraState;
         setCameraOn(newCameraState);
 
-        // Send the boolean state to the other user
+        
         if (socketRef.current) {
           socketRef.current.emit('camera-toggle', { roomId, cameraOn: newCameraState });
         }
@@ -308,9 +307,9 @@ const VideoInterviewRoom = ({ roomId, userId }) => {
 
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-white">
-      {/* Main Video Grid */}
+      
       <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
-        {/* Local Video */}
+        
         <div className="relative bg-gray-800 rounded-lg overflow-hidden h-full flex items-center justify-center">
           <video ref={localVideoRef} autoPlay muted playsInline className="h-full w-full object-cover" />
           {!cameraOn && (
@@ -323,7 +322,7 @@ const VideoInterviewRoom = ({ roomId, userId }) => {
           </div>
         </div>
 
-        {/* Remote Video */}
+        
         <div className="relative bg-gray-800 rounded-lg overflow-hidden h-full flex items-center justify-center">
           <video ref={remoteVideoRef} autoPlay playsInline className="h-full w-full object-cover" />
           {!remoteCameraOn && (
@@ -337,7 +336,7 @@ const VideoInterviewRoom = ({ roomId, userId }) => {
         </div>
       </div>
 
-      {/* Controls */}
+      
       <div className="bg-gray-800 p-4 flex items-center justify-center gap-4">
         <button onClick={toggleMic} className={`p-3 rounded-full ${micOn ? 'bg-blue-600' : 'bg-gray-700'}`} disabled={callEnded} title={micOn ? 'Mute Mic' : 'Unmute Mic'}>
           {micOn ? <Mic size={24} /> : <MicOff size={24} />}

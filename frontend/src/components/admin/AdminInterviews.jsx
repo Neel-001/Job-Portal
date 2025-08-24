@@ -9,7 +9,7 @@ const AdminInterviews = ({ adminId }) => {
   useEffect(() => {
     const fetchInterviews = async () => {
       try {
-        // Fetch all interviews for jobs posted by this admin
+        
         const res = await axios.get(`${INTERVIEW_API_END_POINT}/admin/${adminId}`, { withCredentials: true });
         let data = Array.isArray(res.data) ? res.data : (Array.isArray(res.data.interviews) ? res.data.interviews : []);
         setInterviews(data);

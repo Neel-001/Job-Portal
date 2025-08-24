@@ -23,17 +23,17 @@ io.on('connection', (socket) => {
     socket.to(roomId).emit('signal', { id: socket.id, data });
   });
 
-  // This will relay the camera status to the other user in the room
+  
   socket.on('camera-toggle', ({ roomId, cameraOn }) => {
     socket.to(roomId).emit('camera-toggle', { id: socket.id, cameraOn });
   });
 
-  // Add ready handshake for robust offer delivery
+  
   socket.on('ready', (roomId) => {
     io.to(roomId).emit('ready');
   });
 
-  // Handle custom leave event
+  
   socket.on('leave', (roomId) => {
     socket.leave(roomId);
     socket.to(roomId).emit('user-left', socket.id);
