@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
 import Navbar from '../shared/Navbar'
-import { Label } from '../ui/label'
-import { Input } from '../ui/input'
-import { Button } from '../ui/button'
+import { ArrowLeft } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { COMPANY_API_END_POINT } from '@/utils/constant'
@@ -12,42 +10,114 @@ import { toast } from 'sonner'
 
 function CompanyCreate() {
     const navigate = useNavigate();
-    const [companyName,setCompanyName] = useState()
+    const [companyName, setCompanyName] = useState('')
     const dispatch = useDispatch()
-    const registerNewCompany = async () =>{
+
+    const registerNewCompany = async () => {
         try {
-            const res = await axios.post(`${COMPANY_API_END_POINT}/register`,{companyName},{
-                headers : {
-                    'Content-Type': 'application/json',
-                },
+            const res = await axios.post(`${COMPANY_API_END_POINT}/register`, { companyName }, {
+                headers: { 'Content-Type': 'application/json' },
                 withCredentials: true
             })
-            if(res?.data?.success){
+            if (res?.data?.success) {
                 dispatch(setSingleCompany(res?.data?.company))
                 toast.success(res.data.message)
-                const companyId = res?.data?.company?._id;
-                navigate(`/admin/companies/${companyId}`)
+                navigate(`/admin/companies/${res?.data?.company?._id}`)
             }
-
         } catch (error) {
             console.log(error);
-            
+            toast.error(error.response?.data?.message || 'Something went wrong');
         }
     }
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#f3f0fa] via-[#ece9f6] to-[#e0e7ff] pb-10 flex flex-col">
+        <div style={{ backgroundColor: '#0F172A', minHeight: '100vh' }}>
             <Navbar />
-            <div className="flex flex-1 items-center justify-center py-12">
-                <div className="w-full max-w-2xl bg-white/95 border border-[#e0e7ff] rounded-3xl shadow-2xl p-10 backdrop-blur-lg">
-                    <h1 className="font-black text-3xl md:text-4xl text-[#232946] mb-4 text-center drop-shadow-lg tracking-tight">Your Company Name</h1>
-                    <p className="text-[#6A38C2] text-center mb-8">What would you like to change your company name? You can change this later.</p>
-                    <div className="my-4 gap-2 flex flex-col">
-                        <Label className="font-semibold text-[#232946]">Company Name</Label>
-                        <Input type="text" className="rounded-xl bg-[#f3f0fa] border-0 px-5 py-3 text-lg font-medium text-[#232946] placeholder:text-[#6A38C2]/60 shadow focus:bg-white/90 transition my-2" placeholder="Microsoft etc." onChange={(e) => setCompanyName(e.target.value)} />
+            <div style={{ maxWidth: '560px', margin: '0 auto', padding: '40px 24px' }}>
+                {/* Back */}
+                <button
+                    onClick={() => navigate('/admin/companies')}
+                    style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', color: '#64748B', fontSize: '14px', cursor: 'pointer', marginBottom: '32px', padding: '8px 0', fontFamily: 'Inter, sans-serif' }}
+                    onMouseEnter={e => e.currentTarget.style.color = '#94A3B8'}
+                    onMouseLeave={e => e.currentTarget.style.color = '#64748B'}
+                >
+                    <ArrowLeft size={16} /> Back to Companies
+                </button>
+
+                <div style={{ backgroundColor: '#1E293B', border: '1px solid #334155', borderRadius: '16px', padding: '40px' }}>
+                    <h1 style={{ color: '#F8FAFC', fontSize: '22px', fontWeight: '700', margin: '0 0 8px', letterSpacing: '-0.01em' }}>
+                        Register a Company
+                    </h1>
+                    <p style={{ color: '#64748B', fontSize: '14px', lineHeight: '1.5', margin: '0 0 32px' }}>
+                        What's your company called? You can update the details after registration.
+                    </p>
+
+                    <div style={{ marginBottom: '28px' }}>
+                        <label style={{ display: 'block', color: '#94A3B8', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px' }}>
+                            Company Name
+                        </label>
+                        <input
+                            type="text"
+                            placeholder="e.g. Microsoft, Google, Amazon..."
+                            value={companyName}
+                            onChange={e => setCompanyName(e.target.value)}
+                            style={{
+                                width: '100%',
+                                backgroundColor: '#0F172A',
+                                border: '1px solid #334155',
+                                borderRadius: '8px',
+                                color: '#F8FAFC',
+                                padding: '11px 16px',
+                                fontSize: '15px',
+                                fontFamily: 'Inter, sans-serif',
+                                outline: 'none',
+                                transition: 'border-color 0.2s',
+                                boxSizing: 'border-box',
+                            }}
+                            onFocus={e => e.target.style.borderColor = '#2563EB'}
+                            onBlur={e => e.target.style.borderColor = '#334155'}
+                        />
                     </div>
-                    <div className="flex items-center gap-4 my-10 justify-center">
-                        <Button variant="outline" className="rounded-full px-8 py-3 font-bold" onClick={() => navigate("/admin/companies")}>Cancel</Button>
-                        <Button className="rounded-full bg-gradient-to-r from-[#6A38C2] to-[#F83002] hover:from-[#F83002] hover:to-[#6A38C2] text-white font-bold px-8 py-3 shadow-lg transition" onClick={registerNewCompany}>Continue</Button>
+
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <button
+                            onClick={() => navigate('/admin/companies')}
+                            style={{
+                                flex: 1,
+                                padding: '11px',
+                                borderRadius: '8px',
+                                border: '1px solid #334155',
+                                backgroundColor: 'transparent',
+                                color: '#94A3B8',
+                                fontSize: '14px',
+                                fontWeight: '500',
+                                cursor: 'pointer',
+                                fontFamily: 'Inter, sans-serif',
+                            }}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={registerNewCompany}
+                            disabled={!companyName.trim()}
+                            style={{
+                                flex: 1,
+                                padding: '11px',
+                                borderRadius: '8px',
+                                border: 'none',
+                                backgroundColor: companyName.trim() ? '#2563EB' : '#1e3a6e',
+                                color: companyName.trim() ? '#ffffff' : '#64748B',
+                                fontSize: '14px',
+                                fontWeight: '600',
+                                cursor: companyName.trim() ? 'pointer' : 'not-allowed',
+                                fontFamily: 'Inter, sans-serif',
+                                transition: 'background-color 0.15s',
+                            }}
+                            onMouseEnter={e => { if (companyName.trim()) e.currentTarget.style.backgroundColor = '#1D4ED8'; }}
+                            onMouseLeave={e => { if (companyName.trim()) e.currentTarget.style.backgroundColor = '#2563EB'; }}
+                        >
+                            Continue →
+                        </button>
                     </div>
                 </div>
             </div>

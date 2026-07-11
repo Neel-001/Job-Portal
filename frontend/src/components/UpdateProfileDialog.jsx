@@ -1,9 +1,6 @@
 import React, { useState } from 'react'
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog'
-import { Label } from './ui/label'
-import { Input } from './ui/input'
-import { Button } from './ui/button'
-import { Loader2 } from 'lucide-react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog'
+import { Loader2, X } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { USER_API_END_POINT } from '@/utils/constant'
 import { setUser } from '@/redux/authSlice'
@@ -25,6 +22,7 @@ function UpdateProfileDialog({ open, setOpen }) {
     const [profilePhotoPreview, setProfilePhotoPreview] = useState(user?.profile?.profilePhoto || null);
     const [resumeName, setResumeName] = useState(user?.profile?.resumeOriginalName || '');
     const dispatch = useDispatch()
+
     const changeEventHandler = (e) => {
         setInput({ ...input, [e.target.name]: e.target.value })
     }
@@ -53,92 +51,179 @@ function UpdateProfileDialog({ open, setOpen }) {
         formData.append('phoneNumber', input.phoneNumber);
         formData.append('bio', input.bio);
         formData.append('skills', input.skills);
-        if(input.resume){
-            formData.append('resume', input.resume);
-        }
-        if(input.profilePhoto){
-            formData.append('profilePhoto', input.profilePhoto);
-        }
+        if (input.resume) { formData.append('resume', input.resume); }
+        if (input.profilePhoto) { formData.append('profilePhoto', input.profilePhoto); }
 
         try {
             setLoading(true)
-            const res = await axios.post(`${USER_API_END_POINT}/profile/update`,formData,{
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-            }, withCredentials: true})
-
-            if(res.data.success){
+            const res = await axios.post(`${USER_API_END_POINT}/profile/update`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                withCredentials: true
+            })
+            if (res.data.success) {
                 dispatch(setUser(res.data.user));
                 toast.success(res.data.message);
             }
         } catch (error) {
             console.log(error);
             toast.error(error.response?.data?.message || "Something went wrong");
-        }
-        finally{
+        } finally {
             setLoading(false);
         }
         setOpen(false);
     }
+
+    const inputStyle = {
+        width: '100%',
+        backgroundColor: '#0F172A',
+        border: '1px solid #334155',
+        borderRadius: '8px',
+        color: '#F8FAFC',
+        padding: '10px 14px',
+        fontSize: '14px',
+        fontFamily: 'Inter, sans-serif',
+        outline: 'none',
+        transition: 'border-color 0.2s',
+        boxSizing: 'border-box',
+    };
+
     return (
-        <div>
-            <Dialog open={open} >
-                <DialogContent className="sm:max-w-[425px]" onInteractOutside={() => setOpen(false)}>
-                    <DialogHeader>
-                        <DialogTitle>Update Profile</DialogTitle>
-                    </DialogHeader>
-                    <form onSubmit={submitHandler}>
-                        <div className='grid gap-4 py-4'>
-                            <div className='grid grid-cols-4 items-center gap-4'>
-                                <Label htmlFor="profilePhoto" className="text-right">Profile Photo</Label>
-                                <div className="col-span-3 flex items-center gap-4">
-                                    <Input id="profilePhoto" name="profilePhoto" type="file" accept="image/*" onChange={profilePhotoChangeHandler} />
-                                    {profilePhotoPreview && (
-                                        <img src={profilePhotoPreview} alt="Preview" className="h-12 w-12 rounded-full object-cover border border-[#ece9f6]" />
-                                    )}
-                                </div>
-                            </div>
-                            <div className='grid grid-cols-4 items-center gap-4'>
-                                <Label htmlFor="fullname" className="text-right">Name</Label>
-                                <Input id="fullname" className="col-span-3" name="fullname" value={input.fullname} onChange={changeEventHandler} type="text" />
-                            </div>
+        <Dialog open={open}>
+            <DialogContent
+                onInteractOutside={() => setOpen(false)}
+                style={{
+                    backgroundColor: '#1E293B',
+                    border: '1px solid #334155',
+                    borderRadius: '16px',
+                    color: '#F8FAFC',
+                    maxWidth: '480px',
+                    padding: '32px',
+                }}
+            >
+                <DialogHeader>
+                    <DialogTitle style={{ color: '#F8FAFC', fontSize: '18px', fontWeight: '700' }}>
+                        Edit Profile
+                    </DialogTitle>
+                </DialogHeader>
 
-                            <div className='grid grid-cols-4 items-center gap-4'>
-                                <Label htmlFor="email" className="text-right">Email</Label>
-                                <Input id="email" className="col-span-3" value={input.email} name="email" onChange={changeEventHandler} type="email" />
-                            </div>
-                            <div className='grid grid-cols-4 items-center gap-4'>
-                                <Label htmlFor="phoneNumber" className="text-right">Number</Label>
-                                <Input id="phoneNumber" className="col-span-3" value={input.phoneNumber} name="phoneNumber" onChange={changeEventHandler} />
-                            </div>
-                            <div className='grid grid-cols-4 items-center gap-4'>
-                                <Label htmlFor="bio" className="text-right">Bio</Label>
-                                <Input id="bio" className="col-span-3" value={input.bio} name="bio" onChange={changeEventHandler} />
-                            </div>
-                            <div className='grid grid-cols-4 items-center gap-4'>
-                                <Label htmlFor="skills" className="text-right">Skills</Label>
-                                <Input id="skills" className="col-span-3" value={input.skills} name="skills" onChange={changeEventHandler} />
-                            </div>
-
-                            <div className='grid grid-cols-4 items-center gap-4'>
-                                <Label htmlFor="resume" className="text-right">Resume</Label>
-                                <div className="col-span-3 flex items-center gap-4">
-                                    <Input id="resume" name="resume" type="file" accept="application/pdf" onChange={resumeChangeHandler} />
-                                    {resumeName && (
-                                        <span className="text-xs text-[#6A38C2] font-semibold">{resumeName}</span>
-                                    )}
-                                </div>
-                            </div>
+                <form onSubmit={submitHandler} style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '8px' }}>
+                    {/* Profile Photo */}
+                    <div>
+                        <label style={{ display: 'block', color: '#94A3B8', fontSize: '12px', fontWeight: '500', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                            Profile Photo
+                        </label>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            {profilePhotoPreview && (
+                                <img src={profilePhotoPreview} alt="Preview" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #334155' }} />
+                            )}
+                            <label style={{
+                                flex: 1,
+                                padding: '10px 14px',
+                                backgroundColor: '#0F172A',
+                                border: '1px solid #334155',
+                                borderRadius: '8px',
+                                color: '#64748B',
+                                fontSize: '13px',
+                                cursor: 'pointer',
+                                display: 'block',
+                            }}>
+                                {input.profilePhoto?.name || 'Choose new photo'}
+                                <input type="file" accept="image/*" onChange={profilePhotoChangeHandler} style={{ display: 'none' }} />
+                            </label>
                         </div>
-                        <DialogFooter>
-                            {
-                                loading ? <Button className="w-full my-4"><Loader2 className='mr-2 h-4 w-4 animate-spin' />Please Wait</Button> : <Button type="submit" className="w-full my-4">Update Profile</Button>
-                            }
-                        </DialogFooter>
-                    </form>
-                </DialogContent>
-            </Dialog>
-        </div>
+                    </div>
+
+                    {/* Fields */}
+                    {[
+                        { label: 'Full Name', name: 'fullname', type: 'text', placeholder: 'Your full name' },
+                        { label: 'Email', name: 'email', type: 'email', placeholder: 'your@email.com' },
+                        { label: 'Phone Number', name: 'phoneNumber', type: 'text', placeholder: 'Your phone number' },
+                        { label: 'Bio', name: 'bio', type: 'text', placeholder: 'Short bio...' },
+                        { label: 'Skills (comma separated)', name: 'skills', type: 'text', placeholder: 'React, Node.js, Python...' },
+                    ].map(({ label, name, type, placeholder }) => (
+                        <div key={name}>
+                            <label style={{ display: 'block', color: '#94A3B8', fontSize: '12px', fontWeight: '500', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                {label}
+                            </label>
+                            <input
+                                type={type}
+                                name={name}
+                                value={input[name] || ''}
+                                onChange={changeEventHandler}
+                                placeholder={placeholder}
+                                style={inputStyle}
+                                onFocus={e => e.target.style.borderColor = '#2563EB'}
+                                onBlur={e => e.target.style.borderColor = '#334155'}
+                            />
+                        </div>
+                    ))}
+
+                    {/* Resume */}
+                    <div>
+                        <label style={{ display: 'block', color: '#94A3B8', fontSize: '12px', fontWeight: '500', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                            Resume (PDF)
+                        </label>
+                        <label style={{
+                            display: 'block',
+                            padding: '10px 14px',
+                            backgroundColor: '#0F172A',
+                            border: '1px solid #334155',
+                            borderRadius: '8px',
+                            color: '#64748B',
+                            fontSize: '13px',
+                            cursor: 'pointer',
+                        }}>
+                            {resumeName || 'Upload PDF resume'}
+                            <input type="file" accept="application/pdf" onChange={resumeChangeHandler} style={{ display: 'none' }} />
+                        </label>
+                    </div>
+
+                    {/* Buttons */}
+                    <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+                        <button
+                            type="button"
+                            onClick={() => setOpen(false)}
+                            style={{
+                                flex: 1,
+                                padding: '10px',
+                                borderRadius: '8px',
+                                border: '1px solid #334155',
+                                backgroundColor: 'transparent',
+                                color: '#94A3B8',
+                                fontSize: '14px',
+                                fontWeight: '500',
+                                cursor: 'pointer',
+                                fontFamily: 'Inter, sans-serif',
+                            }}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            style={{
+                                flex: 1,
+                                padding: '10px',
+                                borderRadius: '8px',
+                                border: 'none',
+                                backgroundColor: loading ? '#1e3a6e' : '#2563EB',
+                                color: loading ? '#64748B' : '#ffffff',
+                                fontSize: '14px',
+                                fontWeight: '600',
+                                cursor: loading ? 'not-allowed' : 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px',
+                                fontFamily: 'Inter, sans-serif',
+                            }}
+                        >
+                            {loading ? <><Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> Saving...</> : 'Save Changes'}
+                        </button>
+                    </div>
+                </form>
+            </DialogContent>
+        </Dialog>
     )
 }
 

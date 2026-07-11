@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Navbar from './shared/Navbar'
-
-import { AvatarImage, Avatar } from './ui/avatar'
-import { Button } from './ui/button'
-import { Contact, Mail, Pen } from 'lucide-react'
-import { Badge } from './ui/badge'
-import { Label } from './ui/label'
+import { AvatarImage, Avatar, AvatarFallback } from './ui/avatar'
+import { Contact, Mail, Pen, FileText, Download } from 'lucide-react'
 import AppliedJobTable from './AppliedJobTable'
 import UpcomingInterviews from './UpcomingInterviews';
 import UpdateProfileDialog from './UpdateProfileDialog'
@@ -13,75 +9,208 @@ import { useSelector } from 'react-redux'
 import useGetAppliedJobs from '@/hooks/useGetAppliedJobs'
 import ProfileSkeleton from './ProfileSkeleton'
 
-
-// const skills = ["html", "css", "js", "react js"]
-
 function Profile() {
     const isResume = true;
     useGetAppliedJobs();
     const [open, setOpen] = useState(false);
     const { user } = useSelector(store => store.auth)
     const [loading, setLoading] = useState(true)
+
     useEffect(() => {
         setLoading(true)
-        // Simulate data fetch: set loading false when user data is available
         if (user) {
             setLoading(false)
         }
     }, [user])
+
     if (loading) {
         return <ProfileSkeleton />
     }
+
     return (
-        <div className="bg-gradient-to-br from-[#f3f0fa] to-[#ece9f6] min-h-screen pb-10">
+        <div style={{ backgroundColor: '#0F172A', minHeight: '100vh' }}>
             <Navbar />
-            <div className='max-w-4xl mx-auto bg-white border border-[#ece9f6] rounded-3xl my-10 p-10 shadow-2xl'>
-                <div className='flex flex-col md:flex-row justify-between items-center gap-8'>
-                    <div className='flex items-center gap-6'>
-                        <Avatar className="h-28 w-28 ring-4 ring-[#6A38C2] shadow-lg">
-                            <AvatarImage
-                                src={user?.profile?.profilePhoto ? user.profile.profilePhoto : "https://www.shutterstock.com/image-vector/circle-line-simple-design-logo-600nw-2174926871.jpg"}
-                                alt="profile"
-                            />
-                        </Avatar>
-                        <div>
-                            <h1 className='font-black text-2xl text-[#232946]'>{user?.fullname}</h1>
-                            <p className='text-gray-500'>{user?.profile?.bio}</p>
+            <div style={{ maxWidth: '900px', margin: '0 auto', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+
+                {/* Profile Card */}
+                <div style={{
+                    backgroundColor: '#1E293B',
+                    border: '1px solid #334155',
+                    borderRadius: '16px',
+                    padding: '32px',
+                }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                            <Avatar style={{ width: '80px', height: '80px', border: '2px solid #334155', borderRadius: '50%' }}>
+                                <AvatarImage
+                                    src={user?.profile?.profilePhoto || "https://www.shutterstock.com/image-vector/circle-line-simple-design-logo-600nw-2174926871.jpg"}
+                                    style={{ objectFit: 'cover' }}
+                                />
+                                <AvatarFallback style={{ backgroundColor: '#2563EB', color: '#fff', fontSize: '28px', fontWeight: '700' }}>
+                                    {user?.fullname?.[0]?.toUpperCase()}
+                                </AvatarFallback>
+                            </Avatar>
+                            <div>
+                                <h1 style={{ color: '#F8FAFC', fontSize: '22px', fontWeight: '700', margin: '0 0 6px', letterSpacing: '-0.01em' }}>
+                                    {user?.fullname}
+                                </h1>
+                                <p style={{ color: '#64748B', fontSize: '14px', margin: '0 0 10px', lineHeight: '1.5', maxWidth: '400px' }}>
+                                    {user?.profile?.bio || 'No bio added yet.'}
+                                </p>
+                                <span style={{
+                                    display: 'inline-block',
+                                    backgroundColor: 'rgba(37,99,235,0.1)',
+                                    color: '#60A5FA',
+                                    border: '1px solid rgba(37,99,235,0.25)',
+                                    borderRadius: '6px',
+                                    padding: '3px 10px',
+                                    fontSize: '12px',
+                                    fontWeight: '500',
+                                    textTransform: 'capitalize',
+                                }}>
+                                    {user?.role}
+                                </span>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => setOpen(true)}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                padding: '8px 16px',
+                                borderRadius: '8px',
+                                border: '1px solid #334155',
+                                backgroundColor: 'transparent',
+                                color: '#94A3B8',
+                                fontSize: '14px',
+                                fontWeight: '500',
+                                cursor: 'pointer',
+                                transition: 'all 0.15s',
+                                fontFamily: 'Inter, sans-serif',
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.borderColor = '#475569'; e.currentTarget.style.color = '#F8FAFC'; e.currentTarget.style.backgroundColor = '#334155'; }}
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = '#334155'; e.currentTarget.style.color = '#94A3B8'; e.currentTarget.style.backgroundColor = 'transparent'; }}
+                        >
+                            <Pen size={14} /> Edit Profile
+                        </button>
+                    </div>
+
+                    {/* Contact info */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', marginTop: '24px', paddingTop: '24px', borderTop: '1px solid #334155' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={{ width: '36px', height: '36px', backgroundColor: '#0F172A', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Mail size={16} color="#2563EB" />
+                            </div>
+                            <div>
+                                <p style={{ color: '#475569', fontSize: '11px', margin: 0, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Email</p>
+                                <p style={{ color: '#94A3B8', fontSize: '13px', margin: 0, fontWeight: '500' }}>{user?.email}</p>
+                            </div>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={{ width: '36px', height: '36px', backgroundColor: '#0F172A', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Contact size={16} color="#2563EB" />
+                            </div>
+                            <div>
+                                <p style={{ color: '#475569', fontSize: '11px', margin: 0, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Phone</p>
+                                <p style={{ color: '#94A3B8', fontSize: '13px', margin: 0, fontWeight: '500' }}>{user?.phoneNumber || 'Not provided'}</p>
+                            </div>
                         </div>
                     </div>
-                    <Button className="rounded-full border-[#6A38C2] text-[#6A38C2] font-semibold px-6 py-2 hover:bg-[#f3f0fa] transition" variant="outline" onClick={() => setOpen(true)}><Pen className="mr-2" />Edit</Button>
-                </div>
-                <div className='my-8 grid grid-cols-1 md:grid-cols-2 gap-6'>
-                    <div className='flex items-center gap-3 bg-[#f3f0fa] rounded-xl p-4'>
-                        <Mail className='text-[#6A38C2]' />
-                        <span className='text-[#232946] font-medium'>{user?.email}</span>
-                    </div>
-                    <div className='flex items-center gap-3 bg-[#f3f0fa] rounded-xl p-4'>
-                        <Contact className='text-[#6A38C2]' />
-                        <span className='text-[#232946] font-medium'>{user?.phoneNumber}</span>
-                    </div>
-                </div>
-                <div className='my-8'>
-                    <h1 className='font-bold text-lg text-[#6A38C2] mb-2'>Skills</h1>
-                    <div className='flex flex-wrap items-center gap-2'>
-                        {user?.profile?.skills.length !== 0 ? user?.profile?.skills.map((item, idx) => <Badge key={idx} className="text-sm p-2 m-1 bg-[#ece9f6] text-[#6A38C2] font-semibold">{item}</Badge>) : <span className='text-gray-400'>No skills</span>}
-                    </div>
-                </div>
-                <div className='grid w-full max-w-sm items-center gap-1.5'>
-                    <Label className="text-md font-bold text-[#232946]">Resume</Label>
-                    {
-                        isResume ? <a target='blank' href={user?.profile?.resume} className='text-[#6A38C2] w-full hover:underline cursor-pointer font-semibold'>{user?.profile?.resumeOriginalName}</a> : <span className='text-gray-400'>No Resume Available</span>
-                    }
                 </div>
 
-            </div>
-            <div className='max-w-4xl mx-auto bg-white rounded-2xl'>
-                <h1 className='font-bold text-lg my-5'>Applied Jobs</h1>
-                <AppliedJobTable />
-            </div>
-            <div className='max-w-4xl mx-auto'>
+                {/* Skills + Resume row */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                    {/* Skills */}
+                    <div style={{
+                        backgroundColor: '#1E293B',
+                        border: '1px solid #334155',
+                        borderRadius: '16px',
+                        padding: '24px',
+                    }}>
+                        <h2 style={{ color: '#94A3B8', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 14px' }}>Skills</h2>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                            {user?.profile?.skills?.length !== 0 ? (
+                                user?.profile?.skills?.map((item, idx) => (
+                                    <span
+                                        key={idx}
+                                        style={{
+                                            backgroundColor: '#334155',
+                                            color: '#94A3B8',
+                                            borderRadius: '6px',
+                                            padding: '4px 12px',
+                                            fontSize: '12px',
+                                            fontWeight: '500',
+                                        }}
+                                    >
+                                        {item}
+                                    </span>
+                                ))
+                            ) : (
+                                <span style={{ color: '#475569', fontSize: '13px' }}>No skills added yet.</span>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Resume */}
+                    <div style={{
+                        backgroundColor: '#1E293B',
+                        border: '1px solid #334155',
+                        borderRadius: '16px',
+                        padding: '24px',
+                    }}>
+                        <h2 style={{ color: '#94A3B8', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 14px' }}>Resume</h2>
+                        {isResume && user?.profile?.resume ? (
+                            <a
+                                href={user?.profile?.resume}
+                                target='blank'
+                                style={{ textDecoration: 'none' }}
+                            >
+                                <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '12px',
+                                    padding: '12px',
+                                    backgroundColor: '#0F172A',
+                                    borderRadius: '8px',
+                                    border: '1px solid #334155',
+                                    transition: 'border-color 0.15s',
+                                    cursor: 'pointer',
+                                }}
+                                    onMouseEnter={e => e.currentTarget.style.borderColor = '#2563EB'}
+                                    onMouseLeave={e => e.currentTarget.style.borderColor = '#334155'}
+                                >
+                                    <FileText size={20} color="#2563EB" />
+                                    <div style={{ flex: 1, overflow: 'hidden' }}>
+                                        <p style={{ color: '#F8FAFC', fontSize: '13px', fontWeight: '500', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                            {user?.profile?.resumeOriginalName}
+                                        </p>
+                                        <p style={{ color: '#475569', fontSize: '11px', margin: 0 }}>PDF Document</p>
+                                    </div>
+                                    <Download size={14} color="#475569" />
+                                </div>
+                            </a>
+                        ) : (
+                            <span style={{ color: '#475569', fontSize: '13px' }}>No resume uploaded.</span>
+                        )}
+                    </div>
+                </div>
+
+                {/* Applied Jobs */}
+                <div style={{
+                    backgroundColor: '#1E293B',
+                    border: '1px solid #334155',
+                    borderRadius: '16px',
+                    padding: '24px',
+                }}>
+                    <h2 style={{ color: '#F8FAFC', fontSize: '16px', fontWeight: '600', margin: '0 0 20px' }}>Applied Jobs</h2>
+                    <AppliedJobTable />
+                </div>
+
+                {/* Upcoming Interviews */}
                 <UpcomingInterviews userId={user?._id} />
             </div>
+
             <UpdateProfileDialog open={open} setOpen={setOpen} />
         </div>
     )

@@ -12,11 +12,23 @@ const userSchema = new mongoose.Schema({
     },
     phoneNumber:{
         type:Number,
-        required: true,
+        required: false, // Made optional for Google OAuth users
     },
     password:{
         type:String,
-        required: true,
+        required: false, // Made optional for Google OAuth users
+    },
+    googleId:{
+        type:String,
+        required: false, // Added for Google OAuth tracking
+    },
+    resetPasswordToken:{
+        type:String,
+        required: false,
+    },
+    resetPasswordExpire:{
+        type:Date,
+        required: false,
     },
     role:{
         type:String,

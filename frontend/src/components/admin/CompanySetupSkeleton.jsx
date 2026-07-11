@@ -2,14 +2,38 @@ import React from 'react'
 
 function CompanySetupSkeleton() {
   return (
-    <div className="animate-pulse p-8 bg-white rounded-xl shadow-md max-w-xl mx-auto my-10">
-      <div className="h-8 bg-gray-200 rounded w-1/2 mb-6"></div>
-      <div className="grid grid-cols-2 gap-4">
-        {[...Array(5)].map((_, i) => (
-          <div key={i} className="h-4 bg-gray-200 rounded mb-4"></div>
-        ))}
+    <div
+      className="animate-pulse"
+      style={{
+        backgroundColor: '#0F172A',
+        minHeight: '100vh',
+        padding: '32px 24px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <div
+        style={{
+          width: '100%',
+          maxWidth: '680px',
+          backgroundColor: '#1E293B',
+          border: '1px solid #334155',
+          borderRadius: '16px',
+          padding: '32px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '16px',
+        }}
+      >
+        <div style={{ height: '24px', backgroundColor: '#334155', borderRadius: '4px', width: '40%' }}></div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginTop: '16px' }}>
+          {[...Array(5)].map((_, i) => (
+            <div key={i} style={{ height: '36px', backgroundColor: '#334155', borderRadius: '6px' }}></div>
+          ))}
+        </div>
+        <div style={{ height: '40px', backgroundColor: '#334155', borderRadius: '6px', width: '100%', marginTop: '24px' }}></div>
       </div>
-      <div className="h-10 bg-gray-200 rounded w-full mt-8"></div>
     </div>
   )
 }

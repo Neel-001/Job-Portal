@@ -3,15 +3,18 @@ import Navbar from '../shared/Navbar'
 import ApplicantsTable from './ApplicantsTable'
 import axios from 'axios'
 import { APPLICATION_API_END_POINT } from '@/utils/constant'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { setAllApplicants } from '@/redux/applicationSlice'
+import { ArrowLeft } from 'lucide-react'
 
 function Applicants() {
   const params = useParams()
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const { applicants } = useSelector((store) => store.application)
   const [loading, setLoading] = useState(true)
+
   useEffect(() => {
     const fetchAllApplicants = async () => {
       setLoading(true)
@@ -26,12 +29,50 @@ function Applicants() {
     }
     fetchAllApplicants()
   }, [params.id, dispatch])
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f3f0fa] via-[#ece9f6] to-[#e0e7ff] pb-10 flex flex-col">
+    <div style={{ backgroundColor: '#0F172A', minHeight: '100vh' }}>
       <Navbar />
-      <div className="max-w-7xl mx-auto my-12 p-10 bg-white/95 border border-[#e0e7ff] rounded-3xl shadow-2xl backdrop-blur-lg">
-        <h1 className="font-black text-3xl md:text-4xl text-[#232946] mb-8 text-center drop-shadow-lg tracking-tight">Applicants <span className="text-[#F83002]">({applicants?.applications?.length || 0})</span></h1>
-        <div className="mt-8">
+      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '32px 24px' }}>
+        {/* Back */}
+        <button
+          onClick={() => navigate('/admin/jobs')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: 'none',
+            border: 'none',
+            color: '#64748B',
+            fontSize: '14px',
+            cursor: 'pointer',
+            marginBottom: '24px',
+            padding: '8px 0',
+            fontFamily: 'Inter, sans-serif'
+          }}
+          onMouseEnter={e => e.currentTarget.style.color = '#94A3B8'}
+          onMouseLeave={e => e.currentTarget.style.color = '#64748B'}
+        >
+          <ArrowLeft size={16} /> Back to Jobs
+        </button>
+
+        {/* Header */}
+        <div style={{ marginBottom: '24px' }}>
+          <h1 style={{ color: '#F8FAFC', fontSize: '24px', fontWeight: '700', margin: '0 0 4px', letterSpacing: '-0.01em' }}>
+            Job Applicants
+          </h1>
+          <p style={{ color: '#64748B', fontSize: '14px', margin: 0 }}>
+            {applicants?.applications?.length || 0} candidate(s) applied for this role
+          </p>
+        </div>
+
+        {/* Table Container */}
+        <div style={{
+          backgroundColor: '#1E293B',
+          border: '1px solid #334155',
+          borderRadius: '16px',
+          overflow: 'hidden'
+        }}>
           <ApplicantsTable loading={loading} />
         </div>
       </div>

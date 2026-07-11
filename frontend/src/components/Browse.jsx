@@ -1,49 +1,98 @@
-    import React, { useState } from 'react'
+import React, { useState } from 'react'
 import Navbar from './shared/Navbar'
 import Job from './Job'
 import { useSelector, useDispatch } from 'react-redux';
 import useGetAllJobs from '@/hooks/useGetAllJobs';
 import useGetFilteredJobs from '@/hooks/useGetFilteredJobs';
 import { setSearchedQuery } from '@/redux/jobSlice';
-import { Search } from 'lucide-react';
-import { Button } from './ui/button';
+import { Search, Briefcase } from 'lucide-react';
 
-
-// const randomJobs = [1, 2, 3,4,5,6,7,8]
 function Browse() {
     useGetFilteredJobs();
     const { filteredJobs } = useSelector(store => store.job);
     const dispatch = useDispatch();
     const [query, setQuery] = useState("");
+
     const handleInputChange = (e) => {
         setQuery(e.target.value);
         dispatch(setSearchedQuery(e.target.value));
     };
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#f3f0fa] via-[#ece9f6] to-[#e0e7ff] pb-10">
+        <div style={{ backgroundColor: '#0F172A', minHeight: '100vh' }}>
             <Navbar />
-            <div className='max-w-7xl mx-auto my-10 mt-5'>
-                <div className="flex w-full max-w-2xl shadow-2xl border border-[#e0e7ff] rounded-full bg-white/95 mx-auto backdrop-blur-lg mb-10">
+            <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '40px 24px' }}>
+                {/* Search */}
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    backgroundColor: '#111827',
+                    border: '1px solid #334155',
+                    borderRadius: '12px',
+                    padding: '6px 6px 6px 20px',
+                    maxWidth: '600px',
+                    margin: '0 auto 40px',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+                }}>
+                    <Search size={18} color="#475569" style={{ flexShrink: 0, marginRight: '8px' }} />
                     <input
                         type="text"
-                        placeholder="Search by role, company, location"
-                        className="outline-none border-none w-full bg-transparent text-lg px-8 py-4 rounded-l-full text-[#232946] placeholder:text-[#6A38C2]/60 font-semibold"
+                        placeholder="Search by role, company, or location..."
                         value={query}
                         onChange={handleInputChange}
+                        style={{
+                            flex: 1,
+                            backgroundColor: 'transparent',
+                            border: 'none',
+                            outline: 'none',
+                            color: '#F8FAFC',
+                            fontSize: '15px',
+                            padding: '8px 0',
+                            fontFamily: 'Inter, sans-serif',
+                        }}
                     />
                 </div>
-                <h1 className='font-black text-3xl md:text-4xl text-[#232946] mb-10 text-center drop-shadow-lg'>
-                    <span className='text-[#6A38C2]'>Search Results</span> <span className='text-[#F83002]'>({filteredJobs.length})</span>
-                </h1>
-                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
-                    {
-                        filteredJobs.map((job) => {
-                            return (
-                                <Job key={job._id} job={job}/>
-                            )
-                        })
-                    }
+
+                {/* Results header */}
+                <div style={{ marginBottom: '20px' }}>
+                    <h1 style={{ color: '#F8FAFC', fontSize: '22px', fontWeight: '700', margin: '0 0 4px', letterSpacing: '-0.01em' }}>
+                        Search Results
+                    </h1>
+                    <p style={{ color: '#64748B', fontSize: '14px', margin: 0 }}>
+                        {filteredJobs.length} {filteredJobs.length === 1 ? 'job' : 'jobs'} found
+                        {query && <span style={{ color: '#94A3B8' }}> for "<strong>{query}</strong>"</span>}
+                    </p>
                 </div>
+
+                {/* Job Grid */}
+                {filteredJobs.length === 0 ? (
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '80px 0',
+                        gap: '16px',
+                    }}>
+                        <div style={{ width: '64px', height: '64px', backgroundColor: '#1E293B', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Briefcase size={28} color="#475569" />
+                        </div>
+                        <div style={{ textAlign: 'center' }}>
+                            <p style={{ color: '#94A3B8', fontSize: '16px', fontWeight: '600', margin: '0 0 6px' }}>No results found</p>
+                            <p style={{ color: '#475569', fontSize: '14px', margin: 0 }}>Try a different search term</p>
+                        </div>
+                    </div>
+                ) : (
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                        gap: '16px',
+                    }}>
+                        {filteredJobs.map((job) => (
+                            <Job key={job._id} job={job} />
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     )

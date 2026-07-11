@@ -2,11 +2,15 @@ import React from 'react'
 
 function ApplicantsTableSkeleton() {
   return (
-    <div className="animate-pulse bg-white rounded-xl shadow p-6">
-      <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
-      <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+    <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div style={{ height: '20px', backgroundColor: '#334155', borderRadius: '4px', width: '30%', marginBottom: '8px' }}></div>
       {[...Array(5)].map((_, i) => (
-        <div key={i} className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+        <div key={i} style={{ display: 'flex', gap: '12px' }}>
+          <div style={{ height: '16px', backgroundColor: '#334155', borderRadius: '4px', flex: 2 }}></div>
+          <div style={{ height: '16px', backgroundColor: '#334155', borderRadius: '4px', flex: 3 }}></div>
+          <div style={{ height: '16px', backgroundColor: '#334155', borderRadius: '4px', flex: 1.5 }}></div>
+          <div style={{ height: '16px', backgroundColor: '#334155', borderRadius: '4px', flex: 1.5 }}></div>
+        </div>
       ))}
     </div>
   )

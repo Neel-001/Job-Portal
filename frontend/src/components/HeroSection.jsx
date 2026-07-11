@@ -1,42 +1,193 @@
-import { Search } from 'lucide-react'
+import { Search, TrendingUp, Users, Building2, ChevronRight } from 'lucide-react'
 import React, { useState } from 'react'
-import { Button } from './ui/button'
 import { useDispatch } from 'react-redux'
 import { setSearchedQuery } from '@/redux/jobSlice'
 import { useNavigate } from 'react-router-dom'
 
 function HeroSection() {
-    const [query,setQuery] = useState("")
+    const [query, setQuery] = useState("")
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const searchJobHandler = ()=>{
+
+    const searchJobHandler = () => {
         dispatch(setSearchedQuery(query))
         navigate("/browse")
     }
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') searchJobHandler();
+    }
+
+    const stats = [
+        { value: '50K+', label: 'Active Jobs', icon: TrendingUp },
+        { value: '10K+', label: 'Companies', icon: Building2 },
+        { value: '500K+', label: 'Candidates', icon: Users },
+    ];
+
+    const popularSearches = ['Software Engineer', 'Product Manager', 'Data Scientist', 'UI/UX Designer', 'DevOps'];
+
     return (
-        <section className="relative flex flex-col items-center justify-center min-h-[60vh] bg-gradient-to-br from-[#232946] to-[#6A38C2] py-16 px-4 overflow-hidden">
-            <div className="absolute inset-0 pointer-events-none">
-                <svg width="100%" height="100%" viewBox="0 0 1440 320" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute bottom-0 left-0 w-full h-40 opacity-30">
-                    <path fill="#fff" fillOpacity="1" d="M0,224L48,202.7C96,181,192,139,288,144C384,149,480,203,576,197.3C672,192,768,128,864,128C960,128,1056,192,1152,197.3C1248,203,1344,149,1392,122.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-                </svg>
-            </div>
-            <span className="mx-auto px-6 py-2 rounded-full bg-white/80 text-[#F83002] font-semibold shadow-md tracking-wide mb-4 text-base">No. 1 Job Hunt Website</span>
-            <h1 className="text-5xl md:text-6xl font-extrabold text-white drop-shadow-lg mb-4 leading-tight">Search, Apply &<br />Get Your <span className="text-[#F83002]">Dream Jobs</span></h1>
-            <p className="text-lg text-white/90 max-w-2xl mb-8">Find the best opportunities, apply instantly, and take the next step in your career journey. Your dream job is just a search away!</p>
-            <div className="flex w-full max-w-xl shadow-xl border border-white/30 rounded-full bg-white/90 mx-auto backdrop-blur-sm">
-                <input
-                    type="text"
-                    placeholder="Find your dream jobs"
-                    className="outline-none border-none w-full bg-transparent text-lg px-6 py-3 rounded-l-full text-[#232946] placeholder:text-gray-400"
-                    onChange={(e) => setQuery(e.target.value)}
-                />
-                <Button
-                    className="rounded-r-full bg-[#F83002] hover:bg-[#d12a00] text-white px-6 py-3 text-lg font-semibold transition h-full m-auto"
-                    onClick={searchJobHandler}
-                    style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+        <section style={{
+            backgroundColor: '#0F172A',
+            padding: '80px 24px 64px',
+            borderBottom: '1px solid #1E293B',
+        }}>
+            <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+                {/* Badge */}
+                <div style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    backgroundColor: 'rgba(37,99,235,0.1)',
+                    border: '1px solid rgba(37,99,235,0.25)',
+                    borderRadius: '100px',
+                    padding: '6px 14px',
+                    marginBottom: '28px',
+                }}>
+                    <div style={{ width: '6px', height: '6px', backgroundColor: '#2563EB', borderRadius: '50%' }} />
+                    <span style={{ color: '#60A5FA', fontSize: '13px', fontWeight: '500' }}>
+                        Trusted by 500K+ professionals worldwide
+                    </span>
+                </div>
+
+                {/* Headline */}
+                <h1 style={{
+                    fontSize: 'clamp(36px, 6vw, 60px)',
+                    fontWeight: '800',
+                    color: '#F8FAFC',
+                    lineHeight: '1.15',
+                    letterSpacing: '-0.03em',
+                    marginBottom: '20px',
+                }}>
+                    Find Your Next
+                    <br />
+                    <span style={{ color: '#2563EB' }}>Dream Opportunity</span>
+                </h1>
+
+                <p style={{
+                    color: '#64748B',
+                    fontSize: '18px',
+                    lineHeight: '1.6',
+                    maxWidth: '520px',
+                    margin: '0 auto 40px',
+                }}>
+                    Connect with top companies, discover jobs that match your skills, and take the next step in your career.
+                </p>
+
+                {/* Search Bar */}
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    backgroundColor: '#111827',
+                    border: '1px solid #334155',
+                    borderRadius: '12px',
+                    padding: '6px 6px 6px 20px',
+                    maxWidth: '600px',
+                    margin: '0 auto 24px',
+                    boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+                    transition: 'border-color 0.2s',
+                }}
+                    onFocus={() => { }}
+                    onClick={() => { }}
                 >
-                    <Search className="h-6 w-6" />
-                </Button>
+                    <Search size={20} color="#475569" style={{ flexShrink: 0, marginRight: '4px' }} />
+                    <input
+                        type="text"
+                        value={query}
+                        onChange={e => setQuery(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        placeholder="Search by role, skill, or company..."
+                        style={{
+                            flex: 1,
+                            backgroundColor: 'transparent',
+                            border: 'none',
+                            outline: 'none',
+                            color: '#F8FAFC',
+                            fontSize: '15px',
+                            padding: '8px 12px',
+                            fontFamily: 'Inter, sans-serif',
+                        }}
+                    />
+                    <button
+                        onClick={searchJobHandler}
+                        style={{
+                            padding: '10px 24px',
+                            backgroundColor: '#2563EB',
+                            color: '#ffffff',
+                            border: 'none',
+                            borderRadius: '8px',
+                            fontSize: '15px',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            whiteSpace: 'nowrap',
+                            fontFamily: 'Inter, sans-serif',
+                            transition: 'background-color 0.15s',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.backgroundColor = '#1D4ED8'}
+                        onMouseLeave={e => e.currentTarget.style.backgroundColor = '#2563EB'}
+                    >
+                        Search Jobs
+                        <ChevronRight size={16} />
+                    </button>
+                </div>
+
+                {/* Popular Searches */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '8px', marginBottom: '56px' }}>
+                    <span style={{ color: '#475569', fontSize: '13px' }}>Popular:</span>
+                    {popularSearches.map(term => (
+                        <button
+                            key={term}
+                            onClick={() => { dispatch(setSearchedQuery(term)); navigate('/browse'); }}
+                            style={{
+                                padding: '4px 12px',
+                                backgroundColor: 'transparent',
+                                border: '1px solid #334155',
+                                borderRadius: '100px',
+                                color: '#94A3B8',
+                                fontSize: '13px',
+                                cursor: 'pointer',
+                                transition: 'all 0.15s',
+                                fontFamily: 'Inter, sans-serif',
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.borderColor = '#475569'; e.currentTarget.style.color = '#F8FAFC'; }}
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = '#334155'; e.currentTarget.style.color = '#94A3B8'; }}
+                        >
+                            {term}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Stats */}
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(3, 1fr)',
+                    gap: '1px',
+                    backgroundColor: '#1E293B',
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                    border: '1px solid #334155',
+                }}>
+                    {stats.map(({ value, label, icon: Icon }) => (
+                        <div
+                            key={label}
+                            style={{
+                                padding: '24px',
+                                backgroundColor: '#111827',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                gap: '6px',
+                            }}
+                        >
+                            <Icon size={20} color="#2563EB" />
+                            <span style={{ fontSize: '28px', fontWeight: '800', color: '#F8FAFC', letterSpacing: '-0.02em' }}>{value}</span>
+                            <span style={{ fontSize: '13px', color: '#64748B', fontWeight: '500' }}>{label}</span>
+                        </div>
+                    ))}
+                </div>
             </div>
         </section>
     )

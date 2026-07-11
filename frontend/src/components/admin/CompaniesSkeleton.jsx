@@ -2,13 +2,24 @@ import React from 'react'
 
 function CompaniesSkeleton() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {[...Array(6)].map((_, i) => (
-        <div key={i} className="animate-pulse bg-white rounded-xl shadow p-6">
-          <div className="h-6 bg-gray-200 rounded w-2/3 mb-4"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/3 mb-4"></div>
-          <div className="h-8 bg-gray-200 rounded w-full"></div>
+    <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      {[...Array(5)].map((_, i) => (
+        <div
+          key={i}
+          className="animate-pulse"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '12px 0',
+            borderBottom: '1px solid #1E293B'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ height: '40px', width: '40px', backgroundColor: '#334155', borderRadius: '8px' }}></div>
+            <div style={{ height: '16px', backgroundColor: '#334155', borderRadius: '4px', width: '120px' }}></div>
+          </div>
+          <div style={{ height: '14px', backgroundColor: '#334155', borderRadius: '4px', width: '80px' }}></div>
         </div>
       ))}
     </div>

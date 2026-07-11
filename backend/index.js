@@ -17,8 +17,22 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:8000',
+    'https://talent-nest-384p.onrender.com'
+];
+if (process.env.FRONTEND_URL) {
+    allowedOrigins.push(process.env.FRONTEND_URL);
+    // Also add versions without trailing slashes just in case
+    const cleanUrl = process.env.FRONTEND_URL.replace(/\/$/, "");
+    if (!allowedOrigins.includes(cleanUrl)) {
+        allowedOrigins.push(cleanUrl);
+    }
+}
+
 const corsOptions = {
-    origin: ['http://localhost:8000', 'https://talent-nest-384p.onrender.com'],
+    origin: allowedOrigins,
     credentials: true,
 };
 app.use(cors(corsOptions));

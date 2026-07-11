@@ -1,12 +1,4 @@
 import React from 'react'
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
-} from "@/components/ui/carousel"
-import { Button } from './ui/button'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { setSearchedQuery } from '@/redux/jobSlice'
@@ -17,31 +9,81 @@ const category = [
     "Data Science",
     "Graphic Designer",
     "Full Stack Developer",
+    "Mobile Developer",
+    "DevOps Engineer",
+    "Product Manager",
 ]
 
 function CategoryCarousel() {
     const dispatch = useDispatch()
     const navigate = useNavigate()
+
     const searchJobHandler = (query) => {
         dispatch(setSearchedQuery(query))
         navigate("/browse")
     }
+
     return (
-        <div className="w-full max-w-4xl mx-auto my-20 px-4">
-            <Carousel className="w-full">
-                <CarouselContent>
-                    {
-                        category.map((cat, idx) => (
-                            <CarouselItem key={idx} className="md:basis-1/2 lg:basis-1/3">
-                                <Button className="rounded-full bg-gradient-to-r from-[#6A38C2] to-[#F83002] text-white font-semibold px-8 py-3 shadow-lg hover:scale-105 transition-all duration-200" onClick={()=>searchJobHandler(cat)} >{cat}</Button>
-                            </CarouselItem>
-                        ))
-                    }
-                </CarouselContent>
-                <CarouselPrevious />
-                <CarouselNext />
-            </Carousel>
-        </div >
+        <section style={{
+            backgroundColor: '#0F172A',
+            padding: '64px 24px',
+            borderBottom: '1px solid #1E293B',
+        }}>
+            <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+                <div style={{ textAlign: 'center', marginBottom: '36px' }}>
+                    <h2 style={{
+                        fontSize: '28px',
+                        fontWeight: '700',
+                        color: '#F8FAFC',
+                        letterSpacing: '-0.02em',
+                        marginBottom: '8px',
+                    }}>
+                        Browse by Category
+                    </h2>
+                    <p style={{ color: '#64748B', fontSize: '15px' }}>
+                        Explore opportunities across different industries and roles
+                    </p>
+                </div>
+
+                <div style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    justifyContent: 'center',
+                    gap: '10px',
+                }}>
+                    {category.map((cat, idx) => (
+                        <button
+                            key={idx}
+                            onClick={() => searchJobHandler(cat)}
+                            style={{
+                                padding: '10px 20px',
+                                backgroundColor: '#1E293B',
+                                border: '1px solid #334155',
+                                borderRadius: '8px',
+                                color: '#94A3B8',
+                                fontSize: '14px',
+                                fontWeight: '500',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                fontFamily: 'Inter, sans-serif',
+                            }}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.backgroundColor = 'rgba(37,99,235,0.1)';
+                                e.currentTarget.style.borderColor = '#2563EB';
+                                e.currentTarget.style.color = '#60A5FA';
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.backgroundColor = '#1E293B';
+                                e.currentTarget.style.borderColor = '#334155';
+                                e.currentTarget.style.color = '#94A3B8';
+                            }}
+                        >
+                            {cat}
+                        </button>
+                    ))}
+                </div>
+            </div>
+        </section>
     )
 }
 

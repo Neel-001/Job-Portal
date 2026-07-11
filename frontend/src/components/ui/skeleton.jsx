@@ -3,7 +3,11 @@ import * as React from "react"
 const Skeleton = React.forwardRef(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={`bg-gray-200 rounded-md animate-pulse ${className}`}
+    className={`animate-pulse ${className}`}
+    style={{
+      backgroundColor: '#334155',
+      borderRadius: '8px',
+    }}
     {...props}
   />
 ))

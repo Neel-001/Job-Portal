@@ -1,4 +1,6 @@
 import { Job } from '../models/job.model.js';
+import Interview from '../models/interview.model.js';
+
 export const getAdminInterviews = async (req, res) => {
   try {
     const { adminId } = req.params;
@@ -13,8 +15,6 @@ export const getAdminInterviews = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
-import Interview from '../models/interview.model.js';
 
 export const createInterview = async (req, res) => {
   try {
@@ -45,7 +45,12 @@ export const getUserInterviews = async (req, res) => {
   try {
     const { userId } = req.params;
     const interviews = await Interview.find({ applicantId: userId })
-      .populate('jobId')
+      .populate({
+        path: 'jobId',
+        populate: {
+          path: 'company'
+        }
+      })
       .sort({ date: 1 });
     res.json(interviews);
   } catch (err) {

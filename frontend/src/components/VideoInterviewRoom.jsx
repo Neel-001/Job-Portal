@@ -10,7 +10,9 @@ const VideoInterviewRoom = ({ roomId, userId }) => {
   const [cameraOn, setCameraOn] = useState(true);
   const [remoteCameraOn, setRemoteCameraOn] = useState(true); // Boolean for the other user
   const [micOn, setMicOn] = useState(true);
+  const [remoteMicOn, setRemoteMicOn] = useState(true);
   const [screenSharing, setScreenSharing] = useState(false);
+  const [remoteScreenSharing, setRemoteScreenSharing] = useState(false);
   
   const [debug, setDebug] = useState({
     socketConnected: false,
@@ -172,6 +174,10 @@ const VideoInterviewRoom = ({ roomId, userId }) => {
       setRemoteCameraOn(newCameraState);
     });
 
+    socketRef.current.on('mic-toggle', ({ micOn: newMicState }) => {
+      setRemoteMicOn(newMicState);
+    });
+
     
 
     let gotOffer = false;
@@ -180,6 +186,11 @@ const VideoInterviewRoom = ({ roomId, userId }) => {
       const data = payload.data;
       setDebug(d => ({ ...d, lastSignal: JSON.stringify(data) }));
       console.log('signal event received!', data);
+      
+      if (data.screenSharing !== undefined) {
+        setRemoteScreenSharing(data.screenSharing);
+      }
+
       if (data.sdp) {
         if (data.sdp.type === 'offer') {
           gotOffer = true;
@@ -245,12 +256,22 @@ const VideoInterviewRoom = ({ roomId, userId }) => {
       try {
         const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
         setScreenSharing(true);
+        
+        if (socketRef.current) {
+          socketRef.current.emit('signal', { roomId, data: { screenSharing: true } });
+        }
+
         const videoTrack = screenStream.getVideoTracks()[0];
         const sender = pcRef.current.getSenders().find(s => s.track && s.track.kind === 'video');
         if (sender) sender.replaceTrack(videoTrack);
         localVideoRef.current.srcObject = screenStream;
         videoTrack.onended = async () => {
           setScreenSharing(false);
+          
+          if (socketRef.current) {
+            socketRef.current.emit('signal', { roomId, data: { screenSharing: false } });
+          }
+
           const camStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
           const camTrack = camStream.getVideoTracks()[0];
           if (sender) sender.replaceTrack(camTrack);
@@ -299,8 +320,13 @@ const VideoInterviewRoom = ({ roomId, userId }) => {
     if (localStreamRef.current) {
       const audioTrack = localStreamRef.current.getAudioTracks()[0];
       if (audioTrack) {
-        audioTrack.enabled = !audioTrack.enabled;
-        setMicOn(audioTrack.enabled);
+        const newMicState = !audioTrack.enabled;
+        audioTrack.enabled = newMicState;
+        setMicOn(newMicState);
+
+        if (socketRef.current) {
+          socketRef.current.emit('mic-toggle', { roomId, micOn: newMicState });
+        }
       }
     }
   };
@@ -311,7 +337,7 @@ const VideoInterviewRoom = ({ roomId, userId }) => {
       <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
         
         <div className="relative bg-gray-800 rounded-lg overflow-hidden h-full flex items-center justify-center">
-          <video ref={localVideoRef} autoPlay muted playsInline className="h-full w-full object-cover" />
+          <video ref={localVideoRef} autoPlay muted playsInline className={`h-full w-full ${screenSharing ? 'object-contain' : 'object-cover'}`} />
           {!cameraOn && (
             <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
               <VideoOff className="h-16 w-16 text-gray-500" />
@@ -320,11 +346,23 @@ const VideoInterviewRoom = ({ roomId, userId }) => {
           <div className="absolute bottom-2 left-2 bg-gray-900/50 px-2 py-1 rounded">
             <span className="text-sm font-semibold">You</span>
           </div>
+          <div className="absolute top-2 right-2 flex gap-2">
+            {!micOn && (
+              <div className="bg-red-600/80 p-1.5 rounded-full">
+                <MicOff size={14} color="#fff" />
+              </div>
+            )}
+            {!cameraOn && (
+              <div className="bg-red-600/80 p-1.5 rounded-full">
+                <VideoOff size={14} color="#fff" />
+              </div>
+            )}
+          </div>
         </div>
 
         
         <div className="relative bg-gray-800 rounded-lg overflow-hidden h-full flex items-center justify-center">
-          <video ref={remoteVideoRef} autoPlay playsInline className="h-full w-full object-cover" />
+          <video ref={remoteVideoRef} autoPlay playsInline className={`h-full w-full ${remoteScreenSharing ? 'object-contain' : 'object-cover'}`} />
           {!remoteCameraOn && (
             <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
               <VideoOff className="h-16 w-16 text-gray-500" />
@@ -332,6 +370,18 @@ const VideoInterviewRoom = ({ roomId, userId }) => {
           )}
           <div className="absolute bottom-2 left-2 bg-gray-900/50 px-2 py-1 rounded">
             <span className="text-sm font-semibold">Other</span>
+          </div>
+          <div className="absolute top-2 right-2 flex gap-2">
+            {!remoteMicOn && (
+              <div className="bg-red-600/80 p-1.5 rounded-full">
+                <MicOff size={14} color="#fff" />
+              </div>
+            )}
+            {!remoteCameraOn && (
+              <div className="bg-red-600/80 p-1.5 rounded-full">
+                <VideoOff size={14} color="#fff" />
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -2,13 +2,29 @@ import React from 'react'
 
 function JobsSkeleton() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+      gap: '16px',
+    }}>
       {[...Array(6)].map((_, i) => (
-        <div key={i} className="animate-pulse bg-white rounded-xl shadow p-6">
-          <div className="h-6 bg-gray-200 rounded w-2/3 mb-4"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/3 mb-4"></div>
-          <div className="h-8 bg-gray-200 rounded w-full"></div>
+        <div
+          key={i}
+          className="animate-pulse"
+          style={{
+            backgroundColor: '#1E293B',
+            border: '1px solid #334155',
+            borderRadius: '16px',
+            padding: '24px',
+            height: '240px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px',
+          }}
+        >
+          <div style={{ height: '24px', backgroundColor: '#334155', borderRadius: '4px', width: '60%' }}></div>
+          <div style={{ height: '16px', backgroundColor: '#334155', borderRadius: '4px', width: '40%' }}></div>
+          <div style={{ height: '40px', backgroundColor: '#334155', borderRadius: '4px', width: '100%', marginTop: 'auto' }}></div>
         </div>
       ))}
     </div>
